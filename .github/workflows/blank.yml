@@ -1,0 +1,36 @@
+name: Laravel Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Deploy
+      env:
+        STAGING_SSH_PRIVATE_KEY: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+      run: |
+        # Install SSH client
+        sudo apt-get update
+        sudo apt-get install -y openssh-client
+
+        # Start SSH agent
+        eval "$(ssh-agent -s)"
+
+        if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+          echo "${{ secrets.STAGING_SSH_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
+          ssh-keyscan -H 185.241.151.32 >> ~/.ssh/known_hosts
+          ssh root@185.241.151.32 'bash deploy.sh staging'
+          
+        elif [ "${{ github.ref }}" == "refs/heads/production" ]; then
+          echo "${{ secrets.STAGING_SSH_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
+          ssh-keyscan -H 185.241.151.32 >> ~/.ssh/known_hosts
+          ssh root@185.241.151.32 'bash deploy.sh staging'
+        fi
