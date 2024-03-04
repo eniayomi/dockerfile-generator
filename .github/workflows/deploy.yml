@@ -31,7 +31,9 @@ jobs:
         if [ "${{ github.ref }}" == "refs/heads/main" ]; then
           echo "${{ secrets.STAGING_SSH_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
           ssh-keyscan -H 185.241.151.32 >> ~/.ssh/known_hosts
-          ssh root@185.241.151.32 'bash deploy.sh staging'
+          ls
+          echo "server"
+          ssh root@185.241.151.32 'ls'
           
         elif [ "${{ github.ref }}" == "refs/heads/production" ]; then
           echo "${{ secrets.STAGING_SSH_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
