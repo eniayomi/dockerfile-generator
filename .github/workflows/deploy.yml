@@ -24,6 +24,10 @@ jobs:
         # Start SSH agent
         eval "$(ssh-agent -s)"
 
+        # Ensure .ssh directory exists and has correct permissions
+        mkdir -p ~/.ssh
+        chmod 700 ~/.ssh
+
         if [ "${{ github.ref }}" == "refs/heads/main" ]; then
           echo "${{ secrets.STAGING_SSH_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
           ssh-keyscan -H 185.241.151.32 >> ~/.ssh/known_hosts
